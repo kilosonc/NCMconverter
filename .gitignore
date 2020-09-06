@@ -1,6 +1,10 @@
+NCMConverter*
+NCMconverter*
 *.mp3
 *.ncm
 ./temp
+.idea
+.vscode
 # Binaries for programs and plugins
 *.exe
 *.exe~
