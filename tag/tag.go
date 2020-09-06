@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/closetool/NCMConverter/converter"
-	"github.com/closetool/NCMConverter/tag/flac"
-	"github.com/closetool/NCMConverter/tag/mp3"
+	"github.com/closetool/NCMconverter/converter"
+	"github.com/closetool/NCMconverter/tag/flac"
+	"github.com/closetool/NCMconverter/tag/mp3"
 )
 
 const (

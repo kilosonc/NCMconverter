@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/closetool/NCMConverter/path"
+	"github.com/closetool/NCMconverter/path"
 )
 
 const (
