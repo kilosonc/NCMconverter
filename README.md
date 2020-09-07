@@ -1,4 +1,6 @@
 # NCMconverter
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/closetool/NCMconverter)](https://pkg.go.dev/github.com/closetool/NCMconverter)  
+
 NCMconverter将ncm文件转换为mp3或者flac文件
 
 实现参考了[yoki123/ncmdump][1]，重构了代码，并且添加了多线程支持
@@ -16,3 +18,4 @@ NCMconverter将ncm文件转换为mp3或者flac文件
 
 ---
 [1]:https://github.com/yoki123/ncmdump
+
