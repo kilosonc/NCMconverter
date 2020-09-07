@@ -29,6 +29,7 @@ type Tagger interface {
 	Save() error
 }
 
+// TagAudioFileFromMeta generates tag from meta
 func TagAudioFileFromMeta(tag Tagger, imgData []byte, meta *converter.Meta) error {
 	if (imgData == nil || len(imgData) == 0) && meta.Album.CoverUrl != "" {
 		if coverData, err := fetchUrl(meta.Album.CoverUrl); err != nil {
@@ -71,6 +72,8 @@ func TagAudioFileFromMeta(tag Tagger, imgData []byte, meta *converter.Meta) erro
 	return tag.Save()
 }
 
+// NewTagger create taggger on format
+// path points out where music file is
 func NewTagger(path, format string) (tag Tagger, err error) {
 	switch strings.ToLower(format) {
 	case "mp3":

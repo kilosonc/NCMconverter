@@ -4,6 +4,11 @@ import (
 	"errors"
 )
 
-var ErrNcmFormat = errors.New("File is not NCM format!")
-var ErrExtNcm = errors.New("File should have ext ncm!")
-var ErrMagicHeader = errors.New("Magic header does not match!")
+// ErrNcmFormat represents the file is not a ncm file
+var ErrNcmFormat = errors.New("file is not NCM format")
+
+// ErrExtNcm represents the file has not ext .ncm
+var ErrExtNcm = errors.New("file should have ext .ncm")
+
+// ErrMagicHeader represents the file's header doesn't match required header
+var ErrMagicHeader = errors.New("magic header does not match")

@@ -15,6 +15,8 @@ var (
 	aesModifyKey = []byte{0x23, 0x31, 0x34, 0x6C, 0x6A, 0x6B, 0x5F, 0x21, 0x5C, 0x5D, 0x26, 0x30, 0x55, 0x3C, 0x27, 0x28}
 )
 
+// Meta contains all meta data
+// transform from meta data in json.
 type Meta struct {
 	Id       float64  `json:"musicId"`
 	Name     string   `json:"musicName"`
@@ -31,6 +33,7 @@ func (m *Meta) String() string {
 	return string(res)
 }
 
+// Album contains all album data.
 type Album struct {
 	Id       float64 `json:"albumId"`
 	Name     string  `json:"album"`
@@ -58,6 +61,7 @@ func (a *Artist) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Converter converts raw data into formatted data.
 type Converter struct {
 	*ncm.NcmFile
 	KeyData   []byte
@@ -65,12 +69,16 @@ type Converter struct {
 	MusicData []byte
 }
 
+// NewConverter receives a NcmFile pointer and returns a converter pointer.
+// NcmFile provides raw data.
 func NewConverter(ncmFile *ncm.NcmFile) *Converter {
 	return &Converter{
 		NcmFile: ncmFile,
 	}
 }
 
+// HandleKey uses aes128 decrypt raw key
+// and stores decrypted key into converter
 func (c *Converter) HandleKey() error {
 	tmp := make([]byte, c.Key.Length)
 	for i := range c.Key.Detail {
@@ -86,6 +94,8 @@ func (c *Converter) HandleKey() error {
 	return nil
 }
 
+// HandleMeta uses aes128 decrypt raw meta data,
+// and parse it into struct Meta stored in converter.
 func (c *Converter) HandleMeta() error {
 	if c.Meta.Length <= 0 {
 		format := "flac"
@@ -137,6 +147,7 @@ func (c *Converter) HandleMeta() error {
 	return nil
 }
 
+// HandleMusic using resolved key parses music data.
 func (c *Converter) HandleMusic() error {
 	if c.KeyData == nil {
 		var once = sync.Once{}

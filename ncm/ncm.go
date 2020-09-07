@@ -1,3 +1,4 @@
+//Package ncm reads ncm file into memory, and cut it into different parts.
 package ncm
 
 import (
@@ -10,8 +11,9 @@ import (
 )
 
 const (
-	MagicHaeder1 = 0x4e455443
-	MagicHaeder2 = 0x4d414446
+	// MagicHeader1 is used to check whether the file is ncm format file.
+	MagicHeader1 = 0x4e455443
+	MagicHeader2 = 0x4d414446
 )
 
 type Data struct {
@@ -19,6 +21,7 @@ type Data struct {
 	Detail []byte
 }
 
+// NcmFile represents a ncm file on the computer
 type NcmFile struct {
 	Path     string
 	FileDir  string
@@ -32,6 +35,8 @@ type NcmFile struct {
 	Music    Data
 }
 
+// NewNcmFile create a pointer to ncmfile
+// ncmpath point out where the ncm file is.
 func NewNcmFile(ncmpath string) (nf *NcmFile, err error) {
 	nf = new(NcmFile)
 	//if runtime.GOOS == "windows" {
@@ -56,12 +61,14 @@ func NewNcmFile(ncmpath string) (nf *NcmFile, err error) {
 	return
 }
 
+// Validate check the whether the file is ncm file
+// by ext and header.
 func (nf *NcmFile) Validate() error {
 	if !strings.EqualFold(nf.Ext, ".ncm") {
 		return ErrExtNcm
 	}
 
-	err := nf.CheckHaeder()
+	err := nf.CheckHeader()
 
 	if err != nil {
 		return err
@@ -71,7 +78,9 @@ func (nf *NcmFile) Validate() error {
 	return nil
 }
 
-func (nf *NcmFile) CheckHaeder() error {
+// CheckHeader check whether file's first 4 bytes equal to MagicHeader1
+// and the following 4 bytes equal to MagicHeader2.
+func (nf *NcmFile) CheckHeader() error {
 	if _, err := nf.fd.Seek(0, io.SeekStart); err != nil {
 		return err
 	}
@@ -81,12 +90,14 @@ func (nf *NcmFile) CheckHaeder() error {
 	if err != nil {
 		return err
 	}
-	if m1 != MagicHaeder1 && m2 != MagicHaeder2 {
+	if m1 != MagicHeader1 && m2 != MagicHeader2 {
 		return ErrMagicHeader
 	}
 	return nil
 }
 
+// getData gets (a) uint32 format number as length,
+// and the following (a) bytes data.
 func (nf *NcmFile) getData(offset int64) ([]byte, uint32, error) {
 	if _, err := nf.fd.Seek(offset, io.SeekStart); err != nil {
 		return nil, 0, err
@@ -104,6 +115,7 @@ func (nf *NcmFile) getData(offset int64) ([]byte, uint32, error) {
 	return buf, length, nil
 }
 
+// GetKey gets key used parse the music data.
 func (nf *NcmFile) GetKey() (err error) {
 	tmp, length, err := nf.getData(4*2 + 2)
 	if err != nil {
@@ -114,6 +126,7 @@ func (nf *NcmFile) GetKey() (err error) {
 	return nil
 }
 
+// GetMeta gets meta data describing the music.
 func (nf *NcmFile) GetMeta() (err error) {
 	tmp, length, err := nf.getData(int64(4*2 + 2 + 4 + nf.Key.Length))
 	if err != nil {
@@ -124,6 +137,7 @@ func (nf *NcmFile) GetMeta() (err error) {
 	return nil
 }
 
+// GetCover gets the cover of music.
 func (nf *NcmFile) GetCover() (err error) {
 	tmp, length, err := nf.getData(int64(4*2 + 2 + 4 + nf.Key.Length + 4 + nf.Meta.Length + 5 + 4))
 	if err != nil {
@@ -135,6 +149,7 @@ func (nf *NcmFile) GetCover() (err error) {
 	return nil
 }
 
+// GetMusicData gets the decoded music data.
 func (nf *NcmFile) GetMusicData() error {
 	nf.fd.Seek(int64(4*2+2+4+nf.Key.Length+4+nf.Meta.Length+9+4+nf.Cover.Length), io.SeekStart)
 	file := nf.fd
@@ -156,10 +171,13 @@ func (nf *NcmFile) GetMusicData() error {
 	}
 }
 
+// Close closes fd.
 func (nf *NcmFile) Close() error {
 	return nf.fd.Close()
 }
 
+// Parse is a combination of Validate,GetKey,GetMeta,GetCover and GetMusicData
+// cause these methods have to be called in order except Validata.
 func (nf *NcmFile) Parse() error {
 	err := nf.Validate()
 	if err != nil {
