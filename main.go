@@ -135,6 +135,7 @@ func resolvePath(args []string) ([]string, error) {
 }
 
 func convert(filePath, dir string) error {
+	log.Printf("Converting %s", filePath)
 	nf, err := ncm.NewNcmFile(filePath)
 	if err != nil {
 		return err
@@ -194,6 +195,7 @@ func writeToFile(dst string, data []byte) error {
 		return err
 	}
 
+	log.Printf("Written to %s", dst)
 	return nil
 }
 
